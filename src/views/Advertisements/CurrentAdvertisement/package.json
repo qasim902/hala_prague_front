@@ -1,0 +1,6 @@
+{
+  "name": "CurrentCategories",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./CurrentCategories.js"
+}

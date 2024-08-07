@@ -1,0 +1,6 @@
+{
+  "name": "CurrentPlanTrip",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./CurrentPlanTrip.js"
+}

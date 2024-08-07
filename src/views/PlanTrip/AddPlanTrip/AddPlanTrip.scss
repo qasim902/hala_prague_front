@@ -1,0 +1,115 @@
+// input type number style
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance:textfield;
+}
+/////////
+
+.closeIconSty
+{
+  margin-top: 0 !important;
+  font-size: 15px !important;
+}
+
+// .LatitudeFieldSty,
+// .LongitudeFieldSty
+// {
+//   width: 25%;
+//   display: inline;
+   
+// }
+
+/////////@at-root// spinner
+.loader {
+  // border: 8px solid #f3f3f3;
+  border: 10px solid #D1D1D3;
+  border-radius: 50%;
+  // border-top: 8px solid #3498db;
+  border-top: 10px solid #3498db;
+  // width: 70px;
+  // height: 70px;
+  width: 105px;
+  height: 105px;
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s linear infinite;
+
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loaderContainerOne
+{
+  display: table;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+
+  // margin-top: 9%;
+  z-index: 99999;
+  // background-color: #f3f3f3ad;
+  background-color: #f3f3f36e;
+}
+.loaderContainerTwo
+{
+  // display: table-cell;
+  // // vertical-align: middle;
+  // padding-top: 20%;
+  position: fixed;
+    top: 50%;
+    left: 50%;
+}
+
+
+////////////////
+
+.alertSty
+{
+width: 29%;
+text-align: center;
+position: fixed;
+z-index: 99;
+left: 42%;
+}
+
+.redioBtnContainer
+{
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.textAreaEditorContainer
+{
+  z-index: 4;
+}
+
+.btnResultSty
+{
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.typingDirectionSty
+{
+  direction: rtl;
+}

@@ -1,0 +1,6 @@
+{
+  "name": "CurrentStaticPages",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./CurrentStaticPages.js"
+}
