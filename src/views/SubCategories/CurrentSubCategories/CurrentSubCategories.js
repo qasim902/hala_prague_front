@@ -40,7 +40,7 @@ class Breadcrumbs extends Component {
       alertLock: false,
       showErrMesgPopUp: false,
       errMessage: null,
-      editIconStyOnClick: {color: ''}
+      editIconStyOnClick: { color: "" }
     };
     this.updateSubCategory = this.updateSubCategory.bind(this);
     this.deleteSubCategory = this.deleteSubCategory.bind(this);
@@ -55,7 +55,7 @@ class Breadcrumbs extends Component {
   loadSubCategories() {
     let subCategories = dataService.load("subCategories");
     subCategoryService.getCategories(subCategories);
-    this.setState({ subCategories: subCategories });
+    if (subCategories) this.setState({ subCategories: subCategories });
   }
 
   async deleteSubCategory(event) {
@@ -97,9 +97,9 @@ class Breadcrumbs extends Component {
   // }
   editIcon = () => {
     this.setState({
-       disabled: false,
-       editIconStyOnClick: {color: '#00d0b4'}
-       });
+      disabled: false,
+      editIconStyOnClick: { color: "#00d0b4" }
+    });
   };
 
   togglePopUpFun = e => {
@@ -114,14 +114,13 @@ class Breadcrumbs extends Component {
       disabled: true,
       DataDetails: DetailsData,
       DataDetailsClone: DataDetailsClone,
-      editIconStyOnClick: {color: ''}
+      editIconStyOnClick: { color: "" }
     });
-    
   };
 
   handleDataChange(event, name) {
     let newVal = event.target.value;
-    let DisplayOnMapVal = event.target.checked
+    let DisplayOnMapVal = event.target.checked;
     let nameClone = name;
     if (Array.isArray(name)) name = "nested";
 
@@ -136,7 +135,7 @@ class Breadcrumbs extends Component {
         case "DisplayOnMap": {
           // newVal = newVal === "" ? true : false;
           newVal = DisplayOnMapVal ? true : false;
-          DataDetailsClone[name] = newVal;          
+          DataDetailsClone[name] = newVal;
           break;
         }
         default: {
@@ -173,7 +172,7 @@ class Breadcrumbs extends Component {
   async updateSubCategory(event) {
     event.preventDefault();
     const data = new FormData(event.target);
-    let editedSubCategory = this.state.DataDetailsClone; 
+    let editedSubCategory = this.state.DataDetailsClone;
     try {
       //start spinner
       this.showAndHide(true, "spinner");
@@ -256,7 +255,7 @@ class Breadcrumbs extends Component {
               <ModalBody>
                 {/* Edit failure */}
                 {errMessage}
-                </ModalBody>
+              </ModalBody>
               <ModalFooter>
                 <Button color="secondary" onClick={this.toggleDanger}>
                   Cancel
@@ -346,11 +345,11 @@ class Breadcrumbs extends Component {
                           )}
                           <Col className="edit_Icon_container_sty" xs="12">
                             <div className="tooltip">
-                            <i
-                              onClick={this.editIcon}
-                              style={editIconStyOnClick}
-                              className="cui-pencil icons font-2xl d-block mt-4 edit_Icon_sty"
-                            ></i>
+                              <i
+                                onClick={this.editIcon}
+                                style={editIconStyOnClick}
+                                className="cui-pencil icons font-2xl d-block mt-4 edit_Icon_sty"
+                              ></i>
                               <span className="tooltiptext">Edit</span>
                             </div>
                           </Col>

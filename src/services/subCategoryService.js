@@ -82,6 +82,7 @@ const subCategoryService = {
           subCategory.category = category;
   },
   getCategories: function(subCategories) {
+    if(subCategories?.length === 0) return;
     for (let subCategory of subCategories) this.getCategory(subCategory);
   },
   deleteSubCategory: async subCategory => {

@@ -36,6 +36,7 @@
     "react-router-dom": "^5.0.1",
     "react-test-renderer": "^16.8.6",
     "reactstrap": "^8.0.0",
+    "serve": "^13.0.4",
     "simple-line-icons": "^2.4.1",
     "suneditor-react": "^2.4.0"
   },
@@ -49,7 +50,8 @@
     "test:cov": "npm test -- --coverage --watchAll=false",
     "test:debug": "react-scripts --inspect-brk test --runInBand",
     "eject": "react-scripts eject",
-    "deploy:prod": "better-npm-run deploy:prod"
+    "deploy:prod": "better-npm-run deploy:prod",
+    "deploy:aws": "aws s3 sync ./build s3://admin.planet-destinations.com"
   },
   "bugs": {
     "url": "https://github.com/coreui/coreui-free-react-admin-template/issues"
