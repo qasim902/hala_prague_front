@@ -9,11 +9,10 @@ const categoryService = {
       formData
     );
 
-    if(mapIcon)
-    {
-           mapIcon = mapIcon.name === "" ? null : mapIcon
+    if (mapIcon) {
+      mapIcon = mapIcon.name === "" ? null : mapIcon;
     }
-    
+
     if (mapIcon) category.mapIcon = await fileService.upload(mapIcon);
     category.section = {
       className: "Sections",
@@ -71,12 +70,11 @@ const categoryService = {
     };
     request.DisplayOnMap = request.DisplayOnMap === "" ? true : false;
 
-    if(request.mapIcon)
-    {
-    if (request.mapIcon.name !== "") {
-      request.mapIcon = await fileService.upload(request.mapIcon);
-    } else delete request.mapIcon;
-  }
+    if (request.mapIcon) {
+      if (request.mapIcon.name !== "") {
+        request.mapIcon = await fileService.upload(request.mapIcon);
+      } else delete request.mapIcon;
+    }
     dataService.clearAttributes(request, [
       "subtitleEn",
       "subtitleAr",
@@ -123,6 +121,18 @@ const categoryService = {
         result.push(cat);
     });
     return result;
+  },
+
+  // payload is an array of objects with the following structure:
+  // {categoryId: string, sortOrder: number}
+  updateCategorySortOrder: async payload => {
+    await networkService.send("updateCategorySortOrder", payload);
+    for (let item of payload) {
+      let category = dataService.findById("categories", item.objectId);
+      category.sortOrder = item.sortOrder;
+      dataService.updateById("categories", item.objectId, category);
+    }
+    return true;
   }
 };
 

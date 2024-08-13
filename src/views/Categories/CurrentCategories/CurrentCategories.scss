@@ -71,14 +71,14 @@
   // z-index: 99999;
   // background-color: #fff0 !important;
 
-   position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    z-index: 99999;
-    background-color: #f3f3f36e;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  z-index: 99999;
+  background-color: #f3f3f36e;
 }
 .loaderContainerTwoCategory {
   // display: table-cell;
@@ -91,14 +91,13 @@
   // left: 46%;
 }
 
-.loaderContainerTwoMain
-{
+.loaderContainerTwoMain {
   // display: table-cell;
   // padding-top: 25%;
 
   position: fixed;
-    top: 50%;
-    left: 50%;
+  top: 50%;
+  left: 50%;
 }
 
 /////////////////
@@ -111,8 +110,7 @@
   left: 42%;
 }
 
-.iconSty
-{
+.iconSty {
   margin-bottom: 25px;
 }
 
@@ -133,7 +131,7 @@
   text-align: center;
   border-radius: 6px;
   padding: 5px 0;
-  
+
   /* Position the tooltip */
   position: absolute;
   z-index: 1;

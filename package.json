@@ -38,6 +38,7 @@
     "reactstrap": "^8.0.0",
     "serve": "^13.0.4",
     "simple-line-icons": "^2.4.1",
+    "sortablejs": "^1.15.2",
     "suneditor-react": "^2.4.0"
   },
   "devDependencies": {

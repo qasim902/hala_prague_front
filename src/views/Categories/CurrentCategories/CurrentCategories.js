@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import dataService from "../../../services/dataService.js";
 import categoryService from "../../../services/categoryService.js";
+import Sortable from "sortablejs";
 
 import {
   Button,
@@ -39,8 +40,10 @@ class Breadcrumbs extends Component {
       alertLock: false,
       showErrMesgPopUp: false,
       errMessage: null,
-      editIconStyOnClick: {color: ''},
-      DisplayOnMapcheck: null
+      editIconStyOnClick: { color: "" },
+      DisplayOnMapcheck: null,
+      sortable: null,
+      sorting: false
     };
     this.updateCategory = this.updateCategory.bind(this);
     this.deleteCategory = this.deleteCategory.bind(this);
@@ -144,7 +147,7 @@ class Breadcrumbs extends Component {
 
   handleDataChange(event, name) {
     let newVal = event.target.value;
-    let DisplayOnMapVal = event.target.checked
+    let DisplayOnMapVal = event.target.checked;
     let nameClone = name;
     if (Array.isArray(name)) name = "nested";
 
@@ -171,10 +174,10 @@ class Breadcrumbs extends Component {
   }
 
   editIcon = () => {
-    this.setState({ 
+    this.setState({
       disabled: false,
-      editIconStyOnClick: {color: '#00d0b4'},
-     });
+      editIconStyOnClick: { color: "#00d0b4" }
+    });
   };
   togglePopUpFun = e => {
     const { categories } = this.state,
@@ -189,7 +192,7 @@ class Breadcrumbs extends Component {
       disabled: true,
       DataDetails: DetailsData,
       DataDetailsClone: DataDetailsClone,
-      editIconStyOnClick: {color: ''},
+      editIconStyOnClick: { color: "" },
       DisplayOnMapcheck: DataDetailsClone.DisplayOnMap
     });
   };
@@ -200,13 +203,61 @@ class Breadcrumbs extends Component {
     });
   };
 
-    // disabled upload map icon if switch false
-    ChangeSwitchFun = (event)=>{
-      let DisplayOnMapVal = event.target.checked
+  async updateSortOrder() {
+    let categories = this.state.categories;
+    const sortable = this.sortable.toArray();
+    let newCategories = [];
+    sortable.forEach((id, index) => {
+      let category = categories.find(category => category.objectId === id);
+      category.sortOrder = index + 1;
+      newCategories.push({
+        objectId: category.objectId,
+        sortOrder: category.sortOrder
+      });
+    });
+
+    try {
+      //start spinner
+      this.showAndHide(true, "MainSpinner");
+      await categoryService.updateCategorySortOrder(newCategories);
+      this.loadCategories();
+      // stop spinner
+      this.showAndHide(false, "MainSpinner");
+      //show success alert
+      this.showAndHide(true, "editAlert");
+      //hide success alert
+      setTimeout(() => {
+        this.showAndHide(false, "editAlert");
+      }, 5000);
+    } catch (err) {
+      //stop the loading spinner
+      this.showAndHide(false, "MainSpinner");
+      // show error popup message
+      this.showAndHide(true, "errorPopUp");
+      // save error message in state
       this.setState({
-        DisplayOnMapcheck: DisplayOnMapVal
-      })
+        errMessage: "Failed To Update Sort Order"
+      });
+      console.log("Error while updating sort order: ", err);
     }
+  }
+
+  // disabled upload map icon if switch false
+  ChangeSwitchFun = event => {
+    let DisplayOnMapVal = event.target.checked;
+    this.setState({
+      DisplayOnMapcheck: DisplayOnMapVal
+    });
+  };
+
+  // sortable
+  componentDidMount() {
+    this.sortable = Sortable.create(document.getElementById("sortable"), {
+      animation: 150,
+      handle: ".sort-able",
+      onEnd: this.onEnd
+    });
+  }
 
   render() {
     const {
@@ -237,14 +288,14 @@ class Breadcrumbs extends Component {
         )}
         <Row>
           <Col xs="12" lg="12">
-               {/* spinner */}
-        {mainLoaderLock && (
-          <div className="loaderContainerOne">
-            <div className="loaderContainerTwoMain">
-              <div className="loader"></div>
-            </div>
-          </div>
-        )}
+            {/* spinner */}
+            {mainLoaderLock && (
+              <div className="loaderContainerOne">
+                <div className="loaderContainerTwoMain">
+                  <div className="loader"></div>
+                </div>
+              </div>
+            )}
             {/* error message popup */}
             <Modal
               isOpen={this.state.showErrMesgPopUp}
@@ -257,7 +308,7 @@ class Breadcrumbs extends Component {
               <ModalBody>
                 {/* Edit failure */}
                 {errMessage}
-                </ModalBody>
+              </ModalBody>
               <ModalFooter>
                 <Button color="secondary" onClick={this.toggleDanger}>
                   Cancel
@@ -266,12 +317,30 @@ class Breadcrumbs extends Component {
             </Modal>
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i> Current Categories
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center"
+                  }}
+                >
+                  <div>
+                    <i className="fa fa-align-justify"></i> Current Categories
+                  </div>
+                  <Button
+                    color="primary"
+                    size="sm"
+                    onClick={() => this.updateSortOrder()}
+                  >
+                    Update Orders
+                  </Button>
+                </div>
               </CardHeader>
               <CardBody>
-                <Table responsive>
+                <Table responsive className="tableContainer">
                   <thead>
                     <tr>
+                      <th></th>
                       <th>Section</th>
                       <th>Name</th>
                       <th>Search Keyword</th>
@@ -280,39 +349,49 @@ class Breadcrumbs extends Component {
                       <th>Delete</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    {categories.map(item => (
-                      <tr key={item.objectId}>
-                        <td>{item.section.name}</td>
-                        <td>{item.name}</td>
-                        <td>
-                          {item.searchKeyword
-                            ? item.searchKeyword
-                            : "---------------"}
-                        </td>
-                        <td>{item.DisplayOnMap.toString()}</td>
-                        <td>
-                          <Button
-                            color="primary"
-                            value={item.objectId}
-                            onClick={this.togglePopUpFun}
-                            className="mr-1"
-                          >
-                            More Details
-                          </Button>
-                        </td>
-                        <td>
-                          <Button
-                            color="danger"
-                            value={item.objectId}
-                            onClick={this.deleteCategory}
-                            className="mr-1"
-                          >
-                            Delete
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
+                  <tbody id="sortable">
+                    {categories
+                      .sort((a, b) => a.sortOrder - b.sortOrder)
+                      .map(item => (
+                        <tr
+                          key={item.objectId}
+                          data-id={item.objectId}
+                        >
+                          <td>
+                            <span className="sort-able" style={{ cursor: "move" }}>
+                              <i className="fa fa-bars"></i>
+                            </span>
+                          </td>
+                          <td>{item.section.name}</td>
+                          <td>{item.name}</td>
+                          <td>
+                            {item.searchKeyword
+                              ? item.searchKeyword
+                              : "---------------"}
+                          </td>
+                          <td>{item.DisplayOnMap.toString()}</td>
+                          <td>
+                            <Button
+                              color="primary"
+                              value={item.objectId}
+                              onClick={this.togglePopUpFun}
+                              className="mr-1"
+                            >
+                              More Details
+                            </Button>
+                          </td>
+                          <td>
+                            <Button
+                              color="danger"
+                              value={item.objectId}
+                              onClick={this.deleteCategory}
+                              className="mr-1"
+                            >
+                              Delete
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
                     {/* more details popup */}
                     {DataDetails && (
                       <Modal
@@ -337,14 +416,13 @@ class Breadcrumbs extends Component {
                             xs="12"
                           >
                             <div className="tooltip">
-                            <i
-                              onClick={this.editIcon}
-                              style={editIconStyOnClick}
-                              className="cui-pencil icons font-2xl d-block mt-4 edit_Icon_sty"
-                            ></i>
+                              <i
+                                onClick={this.editIcon}
+                                style={editIconStyOnClick}
+                                className="cui-pencil icons font-2xl d-block mt-4 edit_Icon_sty"
+                              ></i>
                               <span className="tooltiptext">Edit</span>
                             </div>
-                            
                           </Col>
 
                           <Col xs="12">
@@ -398,7 +476,7 @@ class Breadcrumbs extends Component {
                                   />
                                 </Col>
                               </FormGroup>
-  
+
                               <FormGroup row>
                                 <Col md="3">
                                   <Label htmlFor="select">
@@ -490,7 +568,11 @@ class Breadcrumbs extends Component {
                                     type="file"
                                     id="file-input"
                                     name="mapIcon"
-                                    disabled={disabled || !DisplayOnMapcheck ? "disabled" : ""}
+                                    disabled={
+                                      disabled || !DisplayOnMapcheck
+                                        ? "disabled"
+                                        : ""
+                                    }
                                   />
                                   <FormText color="muted">
                                     image size : aspect ratio 19:9 or 343*160
@@ -556,7 +638,7 @@ class Breadcrumbs extends Component {
                                 </Col>
                                 <Col xs="12" md="9">
                                   <Input
-                                    disabled= "disabled"
+                                    disabled="disabled"
                                     type="select"
                                     name="select"
                                     id="select"

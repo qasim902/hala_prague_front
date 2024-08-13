@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import dataService from "../../../services/dataService.js";
 import subCategoryService from "../../../services/subCategoryService.js";
+import Sortable from "sortablejs";
 
 import {
   Button,
@@ -207,6 +208,54 @@ class Breadcrumbs extends Component {
     });
   };
 
+  async updateSortOrder() {
+    let subCategories = this.state.subCategories;
+    const sortable = this.sortable.toArray();
+    let newSubCategories = [];
+    sortable.forEach((id, index) => {
+      let category = subCategories.find(category => category.objectId === id);
+      category.sortOrder = index + 1;
+      newSubCategories.push({
+        objectId: category.objectId,
+        sortOrder: category.sortOrder
+      });
+    });
+
+    try {
+      //start spinner
+      this.showAndHide(true, "MainSpinner");
+      await subCategoryService.updateSubCategorySortOrder(newSubCategories);
+      this.loadSubCategories();
+      // stop spinner
+      this.showAndHide(false, "MainSpinner");
+      //show success alert
+      this.showAndHide(true, "editAlert");
+      //hide success alert
+      setTimeout(() => {
+        this.showAndHide(false, "editAlert");
+      }, 5000);
+    } catch (err) {
+      //stop the loading spinner
+      this.showAndHide(false, "MainSpinner");
+      // show error popup message
+      this.showAndHide(true, "errorPopUp");
+      // save error message in state
+      this.setState({
+        errMessage: "Failed To Update Sort Order"
+      });
+      console.log("Error while updating sort order: ", err);
+    }
+  }
+
+  // sortable
+  componentDidMount() {
+    this.sortable = Sortable.create(document.getElementById("sortable"), {
+      animation: 150,
+      handle: ".sort-able",
+      onEnd: this.onEnd
+    });
+  }
+
   render() {
     const {
       disabled,
@@ -265,12 +314,31 @@ class Breadcrumbs extends Component {
             <div></div>
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i> Current Sub Categories
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center"
+                  }}
+                >
+                  <div>
+                    <i className="fa fa-align-justify"></i> Current Sub
+                    Categories
+                  </div>
+                  <Button
+                    color="primary"
+                    size="sm"
+                    onClick={() => this.updateSortOrder()}
+                  >
+                    Update Orders
+                  </Button>
+                </div>
               </CardHeader>
               <CardBody>
-                <Table responsive>
+                <Table responsive className="tableContainer">
                   <thead>
                     <tr>
+                      <th></th>
                       <th>Category</th>
                       <th>Name</th>
                       <th>Search Keyword</th>
@@ -280,50 +348,60 @@ class Breadcrumbs extends Component {
                       <th>Delete</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    {subCategories.map(item => (
-                      <tr key={item.objectId}>
-                        {/* <td>{item.section.name}</td> */}
-                        <td>{item.category.name}</td>
-                        <td>{item.name}</td>
-                        <td>
-                          {item.searchKeyword
-                            ? item.searchKeyword
-                            : "---------------"}
-                        </td>
-                        <td>{item.DisplayOnMap.toString()}</td>
-                        <td>
-                          <Button
-                            color="primary"
-                            value={item.objectId}
-                            onClick={this.togglePopUpFun}
-                            className="mr-1"
-                          >
-                            More Details
-                          </Button>
-                        </td>
-                        <td>
-                          <Button
-                            disabled={true}
-                            color="success"
-                            value={item.objectId}
-                            className="mr-1"
-                          >
-                            Items
-                          </Button>
-                        </td>
-                        <td>
-                          <Button
-                            color="danger"
-                            value={item.objectId}
-                            onClick={this.deleteSubCategory}
-                            className="mr-1"
-                          >
-                            Delete
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
+                  <tbody id="sortable">
+                    {subCategories
+                      .sort((a, b) => a.sortOrder - b.sortOrder)
+                      .map(item => (
+                        <tr data-id={item.objectId} key={item.objectId}>
+                          <td>
+                            <span
+                              className="sort-able"
+                              style={{ cursor: "move" }}
+                            >
+                              <i className="fa fa-bars"></i>
+                            </span>
+                          </td>
+                          {/* <td>{item.section.name}</td> */}
+                          <td>{item.category.name}</td>
+                          <td>{item.name}</td>
+                          <td>
+                            {item.searchKeyword
+                              ? item.searchKeyword
+                              : "---------------"}
+                          </td>
+                          <td>{item.DisplayOnMap.toString()}</td>
+                          <td>
+                            <Button
+                              color="primary"
+                              value={item.objectId}
+                              onClick={this.togglePopUpFun}
+                              className="mr-1"
+                            >
+                              More Details
+                            </Button>
+                          </td>
+                          <td>
+                            <Button
+                              disabled={true}
+                              color="success"
+                              value={item.objectId}
+                              className="mr-1"
+                            >
+                              Items
+                            </Button>
+                          </td>
+                          <td>
+                            <Button
+                              color="danger"
+                              value={item.objectId}
+                              onClick={this.deleteSubCategory}
+                              className="mr-1"
+                            >
+                              Delete
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
 
                     {DataDetails && (
                       <Modal

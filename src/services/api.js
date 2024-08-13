@@ -2,7 +2,8 @@ import axios from "axios";
 
 const networkService = {
   service: this,
-  serverUrl: "https://api.planet-destinations.com/parse/",
+  // serverUrl: "https://api.planet-destinations.com/parse/",
+  serverUrl: "http://localhost:1337/parse/",
   parseAppId: "pragenow",
   suitId: "5db9ac6d13e31d005e29691a",
   services: [
@@ -61,6 +62,11 @@ const networkService = {
       method: "POST"
     },
     {
+      name: "updateCategorySortOrder",
+      url: "/functions/updateCategorySortOrder",
+      method: "POST"
+    },
+    {
       name: "createSubCategory",
       url: "/functions/subcategory",
       method: "POST"
@@ -68,6 +74,11 @@ const networkService = {
     {
       name: "deleteSubCategory",
       url: "/functions/deleteSubCategory",
+      method: "POST"
+    },
+    {
+      name: "updateSubCategorySortOrder",
+      url: "/functions/updateSubCategorySortOrder",
       method: "POST"
     },
     {

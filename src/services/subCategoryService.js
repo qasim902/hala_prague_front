@@ -82,7 +82,7 @@ const subCategoryService = {
           subCategory.category = category;
   },
   getCategories: function(subCategories) {
-    if(subCategories?.length === 0) return;
+    if (subCategories?.length === 0) return;
     for (let subCategory of subCategories) this.getCategory(subCategory);
   },
   deleteSubCategory: async subCategory => {
@@ -119,6 +119,17 @@ const subCategoryService = {
       if (subCat.sectionItems.includes(itemId)) result.push(subCat);
     });
     return result;
+  },
+  // payload is an array of objects with the following structure:
+  // {categoryId: string, sortOrder: number}
+  updateSubCategorySortOrder: async payload => {
+    await networkService.send("updateSubCategorySortOrder", payload);
+    for (let item of payload) {
+      let subCategories = dataService.findById("subCategories", item.objectId);
+      subCategories.sortOrder = item.sortOrder;
+      dataService.updateById("subCategories", item.objectId, subCategories);
+    }
+    return true;
   }
 };
 

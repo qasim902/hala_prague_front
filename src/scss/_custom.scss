@@ -1,1 +1,17 @@
 // Here you can add other styles
+
+.sortable-chosen {
+  background-color: #f3f3f3;
+  border: 1px solid #d1d1d3;
+  border-radius: 5px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+  cursor: move;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  z-index: 10000;
+}
+
+table td {
+  vertical-align: middle !important;
+}
