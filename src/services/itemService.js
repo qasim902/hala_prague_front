@@ -123,11 +123,23 @@ const itemService = {
       "categories",
       "subCategories"
     ]);
-    console.log("itemClone3 =", itemClone);
 
     let data = dataService.parseForm(["image"], formData);
-    if (data.image.name !== "") {
+
+    const images = formData.getAll("images[]");
+
+    if (data.image && data.image?.name !== "") {
       itemClone.image = await fileService.upload(data.image);
+    }
+
+    // if images
+    if (images.length > 0) {
+      let imagesUrls = [];
+      for (let image of images) {
+        let imageUrl = await fileService.upload(image);
+        imagesUrls.push(imageUrl);
+      }
+      itemClone.images = itemClone.images.concat(imagesUrls);
     }
 
     itemClone.RichDescription = RichDescription;
@@ -195,6 +207,27 @@ const itemService = {
     });
 
     dataService.deleteById("sectionItems", item.objectId);
+  },
+
+  // payload is an array of objects with the following structure:
+  // {categoryId: string, sortOrder: number}
+  updateSectionItemOrder: async payload => {
+    await networkService.send("updateSectionItemOrder", payload);
+    for (let item of payload) {
+      let sectionItem = dataService.findById("sectionItems", item.objectId);
+      sectionItem.sortOrder = item.sortOrder;
+      dataService.updateById("sectionItems", item.objectId, sectionItem);
+    }
+    return true;
+  },
+
+  deleteSectionImage: async function(payload) {
+    await networkService.send("deleteSectionImage", payload);
+    let sectionItem = dataService.findById("sectionItems", payload.sectionId);
+    sectionItem.images = sectionItem.images.filter(
+      image => image.name !== payload.imageId
+    );
+    dataService.updateById("sectionItems", payload.sectionId, sectionItem);
   }
 };
 

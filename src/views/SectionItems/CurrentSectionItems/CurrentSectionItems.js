@@ -1,13 +1,13 @@
 import React, { Component } from "react";
+import Sortable from "sortablejs";
 import dataService from "../../../services/dataService.js";
 import itemService from "../../../services/itemService.js";
 
 import {
-  Badge,
+  Alert,
   Button,
   Card,
   CardBody,
-  CardFooter,
   CardHeader,
   Col,
   Form,
@@ -15,20 +15,18 @@ import {
   FormText,
   Input,
   Label,
-  Row,
-  Table,
   Modal,
-  ModalHeader,
   ModalBody,
   ModalFooter,
-  Alert
+  ModalHeader,
+  Row,
+  Table
 } from "reactstrap";
-import { AppSwitch } from "@coreui/react";
 import "./CurrentSectionItems.scss";
-import { conditionalExpression } from "@babel/types";
 
 import SunEditor, { buttonList } from "suneditor-react";
 import "suneditor/dist/css/suneditor.min.css"; // Import Sun Editor's CSS File
+import SectionCarousels from "../SectionCarousels/Carousels.js";
 
 class Breadcrumbs extends Component {
   constructor(props) {
@@ -57,11 +55,15 @@ class Breadcrumbs extends Component {
       contentAR: null,
       ShowErrorHintLatitude: false,
       ShowErrorHintLongitude: false,
+      images: [],
+      totalImages: 1,
+      deleteImagesId: []
     };
     this.deleteItem = this.deleteItem.bind(this);
   }
 
   componentWillMount() {
+    this.setState({ totalImages: 1 });
     this.loadSectionItems();
   }
 
@@ -215,7 +217,7 @@ class Breadcrumbs extends Component {
         `
       </body>
       </html>`,
-      contentEN:content
+      contentEN: content
     });
   };
   // text area editor fun for AR
@@ -266,71 +268,78 @@ class Breadcrumbs extends Component {
     const data = new FormData(event.target);
     let editedCategory = this.state.DataDetails;
 
-    const { 
-      RichDescriptionValEN, 
+    const {
+      RichDescriptionValEN,
       RichDescriptionValAR,
       contentEN,
-      contentAR 
+      contentAR
     } = this.state;
     // this conditions for validations
-    if( data.get("lat") <= 90 &&
-    data.get("lat") >= -90 &&
-    data.get("long") <= 90 &&
-    data.get("long") >= -90 &&
-    data.get("lat") !== "" &&
-    data.get("long") !== "" &&
+    if (
+      data.get("lat") <= 90 &&
+      data.get("lat") >= -90 &&
+      data.get("long") <= 90 &&
+      data.get("long") >= -90 &&
+      data.get("lat") !== "" &&
+      data.get("long") !== "" &&
       contentEN !== "<p><br></p>" &&
-    contentEN !== null &&
+      contentEN !== null &&
       contentAR !== "<p><br></p>" &&
-      contentAR !== null)
-      {
-    this.setState({
-      ShowErrorHintLatitude: false,
-      ShowErrorHintLongitude: false,
-      ShowErrorHintForRichDescriptionEN: false,
-      ShowErrorHintForRichDescriptionAR: false
-    });
-
-    let RichDescription = {
-      en: RichDescriptionValEN,
-      ar: RichDescriptionValAR
-    };
-
-    try {
-      //start spinner
-      this.showAndHide(true, "spinner");
-      await itemService.updateSectionItem(
-        editedCategory,
-        data,
-        RichDescription
-      );
-      this.loadSectionItems();
-
-      // stop spinner
-      this.showAndHide(false, "spinner");
-      //show success alert
-      this.showAndHide(true, "editAlert");
-      //hide more Details Popup
-      this.showAndHide(false, "moreDetailsPopup");
-      //hide success alert
-      setTimeout(() => {
-        this.showAndHide(false, "editAlert");
-      }, 5000);
-    } catch (err) {
-      //stop the loading spinner
-      this.showAndHide(false, "spinner");
-      // show error popup message
-      this.showAndHide(true, "errorPopUp");
-      // save error message in state
+      contentAR !== null
+    ) {
       this.setState({
-        errMessage: "Failed To Update Section Item"
+        ShowErrorHintLatitude: false,
+        ShowErrorHintLongitude: false,
+        ShowErrorHintForRichDescriptionEN: false,
+        ShowErrorHintForRichDescriptionAR: false
       });
-      //handle this motha foka
-      console.log("error while updaing category", err);
-    }
-    }else
-    {
 
+      let RichDescription = {
+        en: RichDescriptionValEN,
+        ar: RichDescriptionValAR
+      };
+
+      try {
+        //start spinner
+        this.showAndHide(true, "spinner");
+
+        if (this.state.deleteImagesId.length > 0) {
+          await itemService.deleteSectionItemImages({
+            sectionId: editedCategory.objectId,
+            imagesIds: this.state.deleteImagesId
+          });
+        }
+
+        await itemService.updateSectionItem(
+          editedCategory,
+          data,
+          RichDescription
+        );
+        this.loadSectionItems();
+
+        // stop spinner
+        this.showAndHide(false, "spinner");
+        //show success alert
+        this.showAndHide(true, "editAlert");
+        //hide more Details Popup
+        this.showAndHide(false, "moreDetailsPopup");
+        //hide success alert
+        setTimeout(() => {
+          this.showAndHide(false, "editAlert");
+        }, 5000);
+      } catch (err) {
+        //stop the loading spinner
+        this.showAndHide(false, "spinner");
+        // show error popup message
+        this.showAndHide(true, "errorPopUp");
+        // save error message in state
+        this.setState({
+          errMessage: "Failed To Update Section Item"
+        });
+        //handle this motha foka
+        console.log("error while updaing category", err);
+      }
+    } else {
       if (
         (data.get("lat") > 90 && data.get("lat") > -90) ||
         (data.get("lat") < 90 && data.get("lat") < -90) ||
@@ -359,37 +368,67 @@ class Breadcrumbs extends Component {
         });
       }
 
-    // this conditions for validations 
-      if (
-        contentEN === "<p><br></p>" ||
-        contentEN === null
-      ) {
-    
-      this.setState({
-        ShowErrorHintForRichDescriptionEN: true
-      });
-    } else {
-    
-      this.setState({
-        ShowErrorHintForRichDescriptionEN: false
-      });
-    }
+      // this conditions for validations
+      if (contentEN === "<p><br></p>" || contentEN === null) {
+        this.setState({
+          ShowErrorHintForRichDescriptionEN: true
+        });
+      } else {
+        this.setState({
+          ShowErrorHintForRichDescriptionEN: false
+        });
+      }
 
-    if (
-      contentAR === "<p><br></p>" ||
-      contentAR === null
-    ) {
-      this.setState({
-        ShowErrorHintForRichDescriptionAR: true
-      });
-    } else {
-      this.setState({
-        ShowErrorHintForRichDescriptionAR: false
-      });
-    }
+      if (contentAR === "<p><br></p>" || contentAR === null) {
+        this.setState({
+          ShowErrorHintForRichDescriptionAR: true
+        });
+      } else {
+        this.setState({
+          ShowErrorHintForRichDescriptionAR: false
+        });
+      }
     }
   };
 
+  async updateSortOrder() {
+    let sectionItems = this.state.sectionItems;
+    const sortable = this.sortable.toArray();
+    let newSectionItems = [];
+    sortable.forEach((id, index) => {
+      let category = sectionItems.find(category => category.objectId === id);
+      category.sortOrder = index + 1;
+      newSectionItems.push({
+        objectId: category.objectId,
+        sortOrder: category.sortOrder
+      });
+    });
+
+    try {
+      //start spinner
+      this.showAndHide(true, "MainSpinner");
+      await itemService.updateSectionItemOrder(newSectionItems);
+      this.loadSectionItems();
+      // stop spinner
+      this.showAndHide(false, "MainSpinner");
+      //show success alert
+      this.showAndHide(true, "editAlert");
+      //hide success alert
+      setTimeout(() => {
+        this.showAndHide(false, "editAlert");
+      }, 5000);
+    } catch (err) {
+      //stop the loading spinner
+      this.showAndHide(false, "MainSpinner");
+      // show error popup message
+      this.showAndHide(true, "errorPopUp");
+      // save error message in state
+      this.setState({
+        errMessage: "Failed To Update Sort Order"
+      });
+      console.log("Error while updating sort order: ", err);
+    }
+  }
 
   async deleteItem(event) {
     let itemId = event.target.value;
@@ -424,21 +463,20 @@ class Breadcrumbs extends Component {
     let nameClone = name;
     if (Array.isArray(name)) name = "nested";
 
-    this.setState(
-      prevState => {
-        let DataDetails = Object.assign({}, prevState.DataDetails);
+    this.setState(prevState => {
+      let DataDetails = Object.assign({}, prevState.DataDetails);
 
-        switch (name) {
-          case "nested": {
-            DataDetails[nameClone[0]][nameClone[1]] = newVal;
-            break;
-          }
-          default: {
-            DataDetails[name] = newVal;
-          }
+      switch (name) {
+        case "nested": {
+          DataDetails[nameClone[0]][nameClone[1]] = newVal;
+          break;
         }
-        return { DataDetails };
-      });
+        default: {
+          DataDetails[name] = newVal;
+        }
+      }
+      return { DataDetails };
+    });
   }
 
   toggleDanger = () => {
@@ -446,6 +484,90 @@ class Breadcrumbs extends Component {
       showErrMesgPopUp: !this.state.showErrMesgPopUp
     });
   };
+
+  deleteSectionImage = async imageId => {
+    try {
+      let sectionId = this.state.DataDetails.objectId;
+      //start spinner
+      this.showAndHide(true, "MainSpinner");
+      await itemService.deleteSectionImage({
+        sectionId: sectionId,
+        imageId: imageId
+      });
+
+      // stop spinner
+      this.showAndHide(false, "MainSpinner");
+      //show success alert
+      this.showAndHide(true, "editAlert");
+      this.loadSectionItems();
+
+      this.setState({
+        images: this.state.images.filter(image => image.name !== imageId),
+        DataDetails: {
+          ...this.state.DataDetails,
+          images: this.state.DataDetails.images.filter(
+            image => image.name !== imageId
+          )
+        }
+      });
+
+      //hide success alert
+      setTimeout(() => {
+        this.showAndHide(false, "editAlert");
+      }, 5000);
+    } catch (err) {
+      //stop the loading spinner
+      this.showAndHide(false, "MainSpinner");
+      // show error popup message
+      this.showAndHide(true, "errorPopUp");
+      // save error message in state
+      this.setState({
+        errMessage: "Failed To Delete Section Item"
+      });
+      console.log("Error while deleting section item: ", err);
+    }
+  };
+
+  // sortable
+  componentDidMount() {
+    this.sortable = Sortable.create(document.getElementById("sortable"), {
+      animation: 150,
+      handle: ".sort-able",
+      onEnd: this.onEnd
+    });
+  }
+
+  // reset sates
+  componentWillUnmount() {
+    this.setState({
+      popUpLock: false,
+      disabled: true,
+      sectionItems: [],
+      DataDetails: null,
+      showPopUpCategoryAndSubcategory: false,
+      selectedCategoryArr: [],
+      selectedSubCategoryArr: [],
+      popUpVal: null,
+      categoryVal: null,
+      subCategoryVal: null,
+      RichDescriptionValEN: null,
+      RichDescriptionValAR: null,
+      editIconStyOnClick: { color: "" },
+      errMessage: null,
+      loaderLock: false,
+      showErrMesgPopUp: false,
+      alertLock: false,
+      mainLoaderLock: false,
+      loaderLock: false,
+      contentEN: null,
+      contentAR: null,
+      ShowErrorHintLatitude: false,
+      ShowErrorHintLongitude: false,
+      images: [],
+      totalImages: 1,
+      deleteImagesId: []
+    });
+  }
 
   render() {
     const {
@@ -463,7 +585,7 @@ class Breadcrumbs extends Component {
       ShowErrorHintForRichDescriptionEN,
       ShowErrorHintForRichDescriptionAR,
       ShowErrorHintLatitude,
-      ShowErrorHintLongitude,
+      ShowErrorHintLongitude
     } = this.state;
 
     return (
@@ -472,8 +594,8 @@ class Breadcrumbs extends Component {
           <div className="alertSty">
             <Alert color="success">
               {alertMesLock
-                ? " Your Category Has Been Edited Successfully"
-                : " Your Category Has Been Deleted Successfully"}
+                ? " Your Section Item Has Been Updated Successfully"
+                : " Your Section Item Has Been Deleted Successfully"}
             </Alert>
           </div>
         )}
@@ -548,7 +670,25 @@ class Breadcrumbs extends Component {
             </Modal>
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i> Current Section Items
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center"
+                  }}
+                >
+                  <div>
+                    <i className="fa fa-align-justify"></i> Current Section
+                    Items
+                  </div>
+                  <Button
+                    color="primary"
+                    size="sm"
+                    onClick={() => this.updateSortOrder()}
+                  >
+                    Update Orders
+                  </Button>
+                </div>
               </CardHeader>
               <CardBody>
                 <Table responsive>
@@ -562,6 +702,7 @@ class Breadcrumbs extends Component {
                   )}
                   <thead>
                     <tr>
+                      <th></th>
                       <th>Name</th>
                       <th>Website</th>
                       <th>Phone</th>
@@ -570,35 +711,45 @@ class Breadcrumbs extends Component {
                       <th>Delete</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    {sectionItems.map(item => (
-                      <tr key={item.objectId}>
-                        <td>{item.label.en}</td>
-                        <td>{item.website}</td>
-                        <td>{item.phone}</td>
-                        <td>{item.price}</td>
-                        <td>
-                          <Button
-                            color="primary"
-                            value={item.objectId}
-                            onClick={this.togglePopUpFun}
-                            className="mr-1"
-                          >
-                            More Details
-                          </Button>
-                        </td>
-                        <td>
-                          <Button
-                            color="danger"
-                            value={item.objectId}
-                            onClick={this.deleteItem}
-                            className="mr-1"
-                          >
-                            Delete
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
+                  <tbody id="sortable">
+                    {sectionItems
+                      .sort((a, b) => a.sortOrder - b.sortOrder)
+                      .map(item => (
+                        <tr data-id={item.objectId} key={item.objectId}>
+                          <td>
+                            <span
+                              className="sort-able"
+                              style={{ cursor: "move" }}
+                            >
+                              <i className="fa fa-bars"></i>
+                            </span>
+                          </td>
+                          <td>{item.label.en}</td>
+                          <td>{item.website}</td>
+                          <td>{item.phone}</td>
+                          <td>{item.price}</td>
+                          <td>
+                            <Button
+                              color="primary"
+                              value={item.objectId}
+                              onClick={this.togglePopUpFun}
+                              className="mr-1"
+                            >
+                              More Details
+                            </Button>
+                          </td>
+                          <td>
+                            <Button
+                              color="danger"
+                              value={item.objectId}
+                              onClick={this.deleteItem}
+                              className="mr-1"
+                            >
+                              Delete
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
 
                     {DataDetails && (
                       <Modal
@@ -610,8 +761,8 @@ class Breadcrumbs extends Component {
                           sectionItems Details
                         </ModalHeader>
                         <ModalBody>
-                             {/* spinner */}
-                             {loaderLock && (
+                          {/* spinner */}
+                          {loaderLock && (
                             <div className="loaderContainerOne">
                               <div className="loaderContainerTwoSectionItem">
                                 <div className="loader"></div>
@@ -629,10 +780,20 @@ class Breadcrumbs extends Component {
                             </div>
                           </Col>
                           <Col className="image_constainer" xs="12">
-                            <img
-                              src={DataDetails.image.url}
-                              alt="category img"
-                            />
+                            {DataDetails.images?.length > 0 ? (
+                              <SectionCarousels
+                                items={DataDetails.images.map(image => ({
+                                  src: image.url,
+                                  altText: "Slide 1",
+                                  caption: ""
+                                }))}
+                              />
+                            ) : (
+                              <img
+                                src={DataDetails.image.url}
+                                alt="category img"
+                              />
+                            )}
                           </Col>
                           <Col xs="12">
                             <Form
@@ -775,14 +936,15 @@ class Breadcrumbs extends Component {
                                         ]);
                                       }}
                                     />
-                                      {ShowErrorHintLatitude && (
-                                        <FormText color="danger">
-                                          Latitude Number Must Be Between 90 and -90
-                                        </FormText>
-                                      )}
+                                    {ShowErrorHintLatitude && (
+                                      <FormText color="danger">
+                                        Latitude Number Must Be Between 90 and
+                                        -90
+                                      </FormText>
+                                    )}
                                     &nbsp; &nbsp;
-                                    </Col>
-                                    <Col xs="12" md="4">
+                                  </Col>
+                                  <Col xs="12" md="4">
                                     <Input
                                       type="number"
                                       id="text-input"
@@ -799,11 +961,12 @@ class Breadcrumbs extends Component {
                                         ]);
                                       }}
                                     />
-                                      {ShowErrorHintLongitude && (
-                                        <FormText color="danger">
-                                          Longitude Number Must Be Between 90 and -90{" "}
-                                        </FormText>
-                                      )}
+                                    {ShowErrorHintLongitude && (
+                                      <FormText color="danger">
+                                        Longitude Number Must Be Between 90 and
+                                        -90{" "}
+                                      </FormText>
+                                    )}
                                   </Col>
                                 </FormGroup>
                               ) : null}
@@ -972,16 +1135,102 @@ class Breadcrumbs extends Component {
                                     Upload Image
                                   </Label>
                                 </Col>
-                                <Col xs="12" md="9">
-                                  <Input
-                                    type="file"
-                                    id="file-input"
-                                    name="image"
-                                    disabled={disabled ? "disabled" : ""}
-                                  />
-                                  <FormText color="muted">
-                                    image size : aspect ratio 25:14 or 375*250
-                                  </FormText>
+                                <Col xs="10" md="8">
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      flexDirection: "column",
+                                      gap: 16
+                                    }}
+                                  >
+                                    {DataDetails.images?.map((image, index) => (
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          alignItems: "center",
+                                          gap: 4
+                                        }}
+                                      >
+                                        <div style={{ width: "100%" }}>
+                                          <img
+                                            src={image.url}
+                                            alt="category img"
+                                            style={{ width: 100, height: 100 }}
+                                          />
+                                        </div>
+                                        <Button
+                                          color="danger"
+                                          disabled={disabled ? "disabled" : ""}
+                                          onClick={() => {
+                                            this.deleteSectionImage(image.name);
+                                          }}
+                                        >
+                                          <i className="fa fa-trash"></i>
+                                        </Button>
+                                      </div>
+                                    ))}
+
+                                    {[...Array(this.state.totalImages)].map(
+                                      (image, index) => (
+                                        <div
+                                          style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: 4
+                                          }}
+                                        >
+                                          <div style={{ width: "100%" }}>
+                                            <Input
+                                              type="file"
+                                              id="file-input"
+                                              name={`images[]`}
+                                              disabled={
+                                                disabled ? "disabled" : ""
+                                              }
+                                            />
+                                            <FormText color="muted">
+                                              image size : aspect ratio 25:14 or
+                                              375*250
+                                            </FormText>
+                                          </div>
+                                          {index > 0 ? (
+                                            <Button
+                                              color="danger"
+                                              disabled={
+                                                disabled ? "disabled" : ""
+                                              }
+                                              onClick={() =>
+                                                this.setState({
+                                                  totalImages:
+                                                    this.state.totalImages - 1,
+                                                  images: this.state.images.filter(
+                                                    (image, i) => i !== index
+                                                  )
+                                                })
+                                              }
+                                            >
+                                              <i className="fa fa-trash"></i>
+                                            </Button>
+                                          ) : (
+                                            <Button
+                                              color="primary"
+                                              disabled={
+                                                disabled ? "disabled" : ""
+                                              }
+                                              onClick={() =>
+                                                this.setState({
+                                                  totalImages:
+                                                    this.state.totalImages + 1
+                                                })
+                                              }
+                                            >
+                                              <i className="fa fa-plus"></i>
+                                            </Button>
+                                          )}
+                                        </div>
+                                      )
+                                    )}
+                                  </div>
                                 </Col>
                               </FormGroup>
 
@@ -1003,9 +1252,9 @@ class Breadcrumbs extends Component {
                                       buttonList: buttonList.complex
                                     }}
                                   />
-                                    {ShowErrorHintForRichDescriptionEN && (
-                                      <FormText color="danger">Required</FormText>
-                                    )}
+                                  {ShowErrorHintForRichDescriptionEN && (
+                                    <FormText color="danger">Required</FormText>
+                                  )}
                                 </Col>
                               </FormGroup>
 
