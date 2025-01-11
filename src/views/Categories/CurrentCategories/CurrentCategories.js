@@ -82,6 +82,7 @@ class Breadcrumbs extends Component {
     event.preventDefault();
     const data = new FormData(event.target);
     let editedCategory = this.state.DataDetailsClone;
+    delete editedCategory.className;
 
     try {
       //start spinner
