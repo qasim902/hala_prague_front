@@ -132,8 +132,14 @@ const itemService = {
       itemClone.image = await fileService.upload(data.image);
     }
 
+    console.log("Before processing images:", itemClone.images);
     // if images
     if (images.length > 0) {
+
+      if (!Array.isArray(itemClone.images)) {
+        itemClone.images = [];
+      }
+
       let imagesUrls = [];
       for (let image of images) {
         let imageUrl = await fileService.upload(image);
@@ -142,6 +148,7 @@ const itemService = {
       itemClone.images = itemClone.images.concat(imagesUrls);
     }
 
+    console.log("After processing images:", itemClone.images);
     itemClone.RichDescription = RichDescription;
 
     if (itemClone.PageDispalyType === "bookingPage") {
