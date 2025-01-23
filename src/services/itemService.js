@@ -124,9 +124,16 @@ const itemService = {
       "subCategories"
     ]);
 
+    console.log('formData.getAll()');
+    formData.forEach((value, key) => {
+      console.log(`${key}:`, value);
+    });
+
     let data = dataService.parseForm(["image"], formData);
+    console.log(data,'data');
 
     const images = formData.getAll("images[]");
+
 
     if (data.image && data.image?.name !== "") {
       itemClone.image = await fileService.upload(data.image);
@@ -142,8 +149,10 @@ const itemService = {
 
       let imagesUrls = [];
       for (let image of images) {
-        let imageUrl = await fileService.upload(image);
-        imagesUrls.push(imageUrl);
+        if (image && image?.name !== "") {
+          let imageUrl = await fileService.upload(image);
+          imagesUrls.push(imageUrl);
+        }
       }
       itemClone.images = itemClone.images.concat(imagesUrls);
     }

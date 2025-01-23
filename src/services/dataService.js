@@ -12,15 +12,15 @@ const dataService = {
         if (section.objectId === category.section.objectId)
           category.section = section;
 
-    this.save("advertisementBanners", data.advertisementBanners);
+    this.save("advertisementBanners", data.advertisementBanners);//here
     this.save("sections", data.sections);
     this.save("categories", data.categories);
-    this.save("subCategories", data.subCategories);
-    this.save("sectionItems", data.sectionItems);
+    this.save("subCategories", data.subCategories);//here
+    this.save("sectionItems", data.sectionItems);//here
     this.save("plannedTrips", data.plannedTrips);
     this.save("contacts", data.contacts);
     this.save("embassies", data.embassies);
-    this.save("staticPages", data.staticPages);
+    this.save("staticPages", data.staticPages);//here
   },
   findByAttribute: function(collection, attr, value) {
     let collectionObj = this.load(collection);
