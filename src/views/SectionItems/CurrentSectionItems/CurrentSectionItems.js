@@ -46,7 +46,7 @@ class Breadcrumbs extends Component {
       RichDescriptionValAR: null,
       editIconStyOnClick: { color: "" },
       errMessage: null,
-      loaderLock: false,
+      // loaderLock: false,
       showErrMesgPopUp: false,
       alertLock: false,
       mainLoaderLock: false,
@@ -554,7 +554,7 @@ class Breadcrumbs extends Component {
       RichDescriptionValAR: null,
       editIconStyOnClick: { color: "" },
       errMessage: null,
-      loaderLock: false,
+      // loaderLock: false,
       showErrMesgPopUp: false,
       alertLock: false,
       mainLoaderLock: false,
@@ -900,8 +900,8 @@ class Breadcrumbs extends Component {
                                             }
                                             style={{ backgroundColor: "#fff" }}
                                             className="mr-1"
-                                            // disabled={disabled ? "disabled" : ""}
-                                            disabled
+                                            disabled={disabled ? "disabled" : ""}
+                                            // disabled
                                           >
                                             {SubCategorySelect.name}
                                             &nbsp; &nbsp;
