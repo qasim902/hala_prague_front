@@ -854,8 +854,8 @@ class Breadcrumbs extends Component {
                                               this.deleteCategoryFun(e)
                                             }
                                             style={{ backgroundColor: "#fff" }}
-                                            // disabled={disabled ? "disabled" : ""}
-                                            disabled
+                                            disabled={disabled ? "disabled" : ""}
+                                            // disabled
                                             className="mr-1"
                                           >
                                             {categorySelect.name}
