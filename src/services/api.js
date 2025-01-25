@@ -187,18 +187,11 @@ const networkService = {
   sendSilentPush: function() {
     axios({
       method: "post",
-      url: "https://notify.appgain.io/5db9b9ef681ca4000ab4769b/send",
-      data: {
-        appPush: {
-          "content-available": 1,
-          sound: "",
-          op: "update"
-        }
-      },
+      url: "https://api.planet-destinations.com/parse/functions/updateData",
       headers: {
         "Content-Type": "application/json",
-        appapikey:
-          "36be548b316a19d741da2421ba373736257fde7fffe418f27d746f1db9c6dac4"
+        "x-parse-application-id": this.parseAppId,
+        "x-parse-master-key": "MASTER-30c0bff7b37fcd871e2bec3aeb685852e2f8d1d683a97d6d9a0c1de7fba2cb8e",
       }
     });
   }
