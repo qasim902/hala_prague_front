@@ -135,6 +135,7 @@ class Breadcrumbs extends Component {
     } = this.state;
     if (popUpVal === "Category") {
       let checkCategoryArr = selectedCategoryArr.includes(categoryVal);
+      console.log(checkCategoryArr,'checkCategoryArr');
       if (!checkCategoryArr) {
         if (categoryVal !== null) {
           var selectedCategory = selectedCategoryArr.concat(categoryVal);
@@ -176,6 +177,10 @@ class Breadcrumbs extends Component {
       return filterRes === e.currentTarget.value;
     });
 
+    console.log(e.currentTarget.value,'e.currentTarget.value');
+    console.log(selectedCategoryArr,'selectedCategoryArr');
+    console.log(filteredCategoryArr,'filteredCategoryArr');
+
     let checkCategoryArr = selectedCategoryArr.includes(filteredCategoryArr[0]);
     if (checkCategoryArr) {
       let selectedCategoryArray = [...selectedCategoryArr]; // make a separate copy of the array
@@ -185,13 +190,16 @@ class Breadcrumbs extends Component {
       if (CategoryArrayIndex !== -1) {
         selectedCategoryArray.splice(CategoryArrayIndex, 1);
         this.setState({ selectedCategoryArr: selectedCategoryArray });
+        console.log(selectedCategoryArray,'selectedCategoryArray');
       }
     }
+    console.log(checkCategoryArr,'checkCategoryArr');
 
     //  delete sub cataegory
     let filtered = selectedSubCategoryArr.filter(filterResult => {
       return filterResult === e.currentTarget.value;
     });
+    console.log(filtered,'filtered');
     let checkSubCategoryArr = selectedSubCategoryArr.includes(filtered[0]);
     if (checkSubCategoryArr) {
       let selectedSubCategoryArray = [...selectedSubCategoryArr]; // make a separate copy of the array
@@ -200,6 +208,7 @@ class Breadcrumbs extends Component {
         selectedSubCategoryArray.splice(index, 1);
         this.setState({ selectedSubCategoryArr: selectedSubCategoryArray });
       }
+    console.log(selectedSubCategoryArray,'selectedSubCategoryArray');
     }
   };
   // text area editor fun for EN
