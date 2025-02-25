@@ -179,10 +179,10 @@ class Breadcrumbs extends Component {
       RichDescriptionValEN:
         `<html lang='en'>
       <head>
-          <link href='https://fonts.googleapis.com/css?family=Inder&display=swap&subset=latin-ext' rel='stylesheet'>
+          <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
       </head>
-      <body style="font-family: 'Inder' !important;">
+      <body style="font-family: 'Noto Sans', serif !important;">
             ` +
         content +
         `
@@ -197,10 +197,10 @@ class Breadcrumbs extends Component {
       RichDescriptionValAR:
         `<html lang='en'>
       <head>
-          <link href='https://fonts.googleapis.com/css?family=Inder&display=swap&subset=latin-ext' rel='stylesheet'>
+          <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
       </head>
-      <body style="font-family: 'Inder' !important;">
+      <body style="font-family: 'Noto Sans', serif !important;">
             ` +
         content +
         `
@@ -296,7 +296,7 @@ class Breadcrumbs extends Component {
 
     if (
       Array.isArray(showSelectedSectionItemsArr) &&
-      showSelectedSectionItemsArr.length == 0 
+      showSelectedSectionItemsArr.length == 0
     ) {
       this.setState({
         ShowErrorHintForAddDayBtn: true
@@ -422,7 +422,7 @@ class Breadcrumbs extends Component {
       ShowErrorHintForRichDescriptionAR,
       ShowErrorHintForAddDayBtn
     } = this.state;
-   
+
 
 
     return (

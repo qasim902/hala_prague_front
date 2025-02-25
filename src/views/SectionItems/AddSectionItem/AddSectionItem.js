@@ -178,10 +178,10 @@ class Breadcrumbs extends Component {
     this.setState({
       RichDescriptionValEN: `<html lang='en'>
       <head>
-          <link href='https://fonts.googleapis.com/css?family=Inder&display=swap&subset=latin-ext' rel='stylesheet'>
+          <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
       </head>
-      <body style="font-family: 'Inder' !important;">
+      <body style="font-family: 'Noto Sans', serif !important;">
             `+content+`
       </body>
       </html>`,
@@ -194,10 +194,10 @@ class Breadcrumbs extends Component {
     this.setState({
       RichDescriptionValAR: `<html lang='en'>
       <head>
-          <link href='https://fonts.googleapis.com/css?family=Inder&display=swap&subset=latin-ext' rel='stylesheet'>
+          <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
       </head>
-      <body style='direction: rtl;font-family: 'Inder' !important;'>
+      <body style='direction: rtl;font-family: 'Noto Sans', serif !important;'>
             `+content+`
       </body>
       </html>`,
@@ -375,7 +375,7 @@ class Breadcrumbs extends Component {
     });
   };
 
-  
+
 
   radioBtnValFun = e => {
     this.setState({
@@ -408,7 +408,7 @@ class Breadcrumbs extends Component {
       ShowErrorHintForAddCategoryBtn,
       ShowErrorHintForAddSubCategoryBtn,
       displayPage
-    } = this.state; 
+    } = this.state;
     return (
       <div className="animated fadeIn">
         {alertLock && (
@@ -511,7 +511,7 @@ class Breadcrumbs extends Component {
             </Modal>
             <Card>
               <CardHeader>
-                <strong>Add Section Item</strong> 
+                <strong>Add Section Item</strong>
               </CardHeader>
               <CardBody>
                 <Form onSubmit={this.createItem} className="form-horizontal">
@@ -797,7 +797,7 @@ class Breadcrumbs extends Component {
                           height: 200,
                           buttonList: buttonList.complex
                         }}
-                        
+
                       />
                       {ShowErrorHintForRichDescriptionEN && (
                         <FormText color="danger">Required</FormText>

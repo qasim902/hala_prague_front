@@ -260,7 +260,7 @@ class Breadcrumbs extends Component {
         // deleteLock: deleteLock + 1
       });
     } else {
-      // delete the section items from add day plan trip popup 
+      // delete the section items from add day plan trip popup
       var delObj = selectedSectionItemsArr
         .map(obj => {
           return obj.objectId;
@@ -296,10 +296,10 @@ class Breadcrumbs extends Component {
       RichDescriptionValEN:
         `<html lang='en'>
       <head>
-          <link href='https://fonts.googleapis.com/css?family=Inder&display=swap&subset=latin-ext' rel='stylesheet'>
+          <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
       </head>
-      <body style="font-family: 'Inder' !important;">
+      <body style="font-family: 'Noto Sans', serif !important;">
             ` +
         content +
         `
@@ -314,10 +314,10 @@ class Breadcrumbs extends Component {
       RichDescriptionValAR:
         `<html lang='en'>
       <head>
-          <link href='https://fonts.googleapis.com/css?family=Inder&display=swap&subset=latin-ext' rel='stylesheet'>
+          <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
       </head>
-      <body style="font-family: 'Inder' !important;">
+      <body style="font-family: 'Noto Sans', serif !important;">
             ` +
         content +
         `
@@ -502,7 +502,7 @@ class Breadcrumbs extends Component {
     });
   }
 
-  // // hide and show add and edit Day plan trip pop up 
+  // // hide and show add and edit Day plan trip pop up
   togglePopUpDay = AddPopupLock => {
     const { EditBtnLock, planTripArr } = this.state;
 
