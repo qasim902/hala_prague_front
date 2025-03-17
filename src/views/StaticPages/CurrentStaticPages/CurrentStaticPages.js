@@ -270,7 +270,7 @@ class Breadcrumbs extends Component {
       RichDescriptionValEN:
         `<html lang='en'>
         <head>
-            <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+            <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet">
 
         </head>
         <body style="font-family: 'Noto Sans', serif !important;">
@@ -288,7 +288,7 @@ class Breadcrumbs extends Component {
       RichDescriptionValAR:
         `<html lang='en'>
         <head>
-            <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+            <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet">
 
         </head>
         <body style='direction: rtl;font-family: 'Noto Sans', serif !important;'>
